@@ -1,5 +1,7 @@
 "use strict";
 
+console.log("butter_ver2.js is loaded.");
+
 class butterjs{
     constructor(set){
         this.set={ ...set };
@@ -364,14 +366,6 @@ class butterjs{
             g.stroke();
         };
     };
-    fadeOut(color, time){
-        if(this.element.sub_canvas.length==0){ this.element.sub_canvas.push(document.createElement("canvas")); };
-        const canvas=this.element.canvas;
-        const context=this.element.context;
-        const vcan=this.element.sub_canvas[0];
-        const vcon=vcan.getContext("2d");
-        
-    };
 
 
 
@@ -393,7 +387,7 @@ class butterjs{
         module.drawCenter=(x, y, w, h)=>{
             const wrate=this.property.rate.width; const hrate=this.property.rate.height;
             g.translate((x-w/2)*wrate, (y-h/2)*hrate);
-            module.draw(0, 0, w, h);
+            module.draw(0, 0, width, height);
             g.translate(-(x-w/2)*wrate, -(y-h/2)*hrate);
         };
 
@@ -424,36 +418,13 @@ class butterjs{
         module.drawCenter=(sx, sy, sw, sh, x, y, w, h)=>{
             const wrate=this.property.rate.width; const hrate=this.property.rate.height;
             g.translate((x-w/2)*wrate, (y-h/2)*hrate);
-            module.draw(sx, sy, sw, sh, 0, 0, w, h);
+            module.draw(sx, sy, sw, sh, 0, 0, width, height);
             g.translate(-(x-w/2)*wrate, -(y-h/2)*hrate);
         };
 
         return module;
     };
-    getTextureDataURL(set){
-        const g=this.element.context;
-        let module={
-            data: set.data,
-        };
-        module.img=new Image();
-        module.img.src=module.data;
-
-        module.draw=(sx, sy, sw, sh, x, y, w, h)=>{
-            const wrate=this.property.rate.width; const hrate=this.property.rate.height;
-            g.drawImage(module.img, sx, sy, sw, sh,
-                            x*wrate, y*hrate, w*wrate, h*hrate);
-        };
-
-        module.drawCenter=()=>{
-            const wrate=this.property.rate.width; const hrate=this.property.rate.height;
-            g.translate((x-w/2)*wrate, (y-h/2)*hrate);
-            module.draw(sx, sy, sw, sh, 0, 0, w, h);
-            g.translate(-(x-w/2)*wrate, -(y-h/2)*hrate);
-        };
-
-        return module;
-    };
-    getSpriteTexture(set){
+    getSpriteImageData(set){
         let module={
             texture: set.texture,
             sx: set.sx, sy: set.sy, sw: set.sw, sh: set.sh,
@@ -469,6 +440,7 @@ class butterjs{
 
         return module;
     };
+
 
 
 
@@ -555,7 +527,11 @@ class butterjs{
         this.funcs.modifyClick=(e, func)=>{
             let result={};
             for(const key in e){result[key]=e[key];};
-            this.funcs.setOffset(result);
+            const offset=this.element.canvas.getBoundingClientRect();
+            const pageBasedWrate=this.property.draw_area_width/this.property.offset_width;
+            const pageBasedHrate=this.property.draw_area_height/this.property.offset_height;
+            result.offsetX=(result.pageX-offset.left)*pageBasedWrate;
+            result.offsetY=(result.pageY-offset.top)*pageBasedHrate;
             func(result);
         };
 
